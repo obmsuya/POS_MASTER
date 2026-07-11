@@ -9,7 +9,6 @@ import (
 	"github.com/chrisostomemataba/faltasi-cli/internal/i18n"
 )
 
-// LookupFlow is a read-only customer search — no payment is recorded here.
 func LookupFlow(client *api.Client) error {
 	var method string
 	err := huh.NewSelect[string]().

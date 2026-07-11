@@ -7,9 +7,6 @@ import (
 
 var spinnerFrames = []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
 
-// WithSpinner runs work in the background while animating a spinner next
-// to the given label (e.g. i18n.T("loading")). The line is cleared once
-// work finishes, whether it succeeds or returns an error.
 func WithSpinner(label string, work func() error) error {
 	done := make(chan error, 1)
 	go func() {

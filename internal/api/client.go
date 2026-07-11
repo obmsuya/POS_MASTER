@@ -1,5 +1,3 @@
-// Package api is the HTTP client for the wapangaji Django backend. It never
-// stores a user's password — only the short-lived JWT pair issued at login.
 package api
 
 import (
@@ -9,11 +7,22 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"time"
 )
 
-const BaseURL = "https://backend.wapangaji.com/api/v1"
+const productionBaseURL = "https://backend.wapangaji.com/api/v1"
+
+var BaseURL = resolveBaseURL()
+
+func resolveBaseURL() string {
+	overrideURL := os.Getenv("FALTASI_API_BASE_URL")
+	if overrideURL != "" {
+		return overrideURL
+	}
+	return productionBaseURL
+}
 
 type Client struct {
 	http         *http.Client
@@ -25,8 +34,6 @@ func New() *Client {
 	return &Client{http: &http.Client{Timeout: 20 * time.Second}}
 }
 
-// APIError is returned whenever the server responds with a non-2xx status.
-// Message is whatever human-readable text the backend supplied.
 type APIError struct {
 	StatusCode int
 	Message    string
@@ -50,8 +57,6 @@ type loginResponse struct {
 	} `json:"tokens"`
 }
 
-// Login authenticates with phone number + password and stores the returned
-// JWT pair on the client for subsequent requests.
 func (c *Client) Login(phone, password string) (*User, error) {
 	body, err := json.Marshal(map[string]string{"phone_number": phone, "password": password})
 	if err != nil {
@@ -68,14 +73,11 @@ func (c *Client) Login(phone, password string) (*User, error) {
 	return &parsed.User, nil
 }
 
-// RestoreSession re-attaches a previously cached token pair without
-// re-authenticating.
 func (c *Client) RestoreSession(access, refresh string) {
 	c.AccessToken = access
 	c.RefreshToken = refresh
 }
 
-// RefreshAccessToken exchanges the refresh token for a new access token.
 func (c *Client) RefreshAccessToken() error {
 	body, err := json.Marshal(map[string]string{"refresh": c.RefreshToken})
 	if err != nil {
@@ -106,9 +108,6 @@ type lookupResponse struct {
 	Data  LicenseInfo `json:"data"`
 }
 
-// Lookup finds an existing customer by hardware ID or phone number. Returns
-// (nil, nil) when nothing is found — that's a valid "new customer" outcome,
-// not an error.
 func (c *Client) Lookup(hardwareID, phone string) (*LicenseInfo, error) {
 	query := ""
 	if hardwareID != "" {
@@ -251,9 +250,6 @@ func (c *Client) PaymentHistory(hardwareID string) ([]PaymentRecord, error) {
 	return parsed.Data, nil
 }
 
-// do performs one HTTP round trip and, on a 401 with a refresh token
-// available, retries exactly once after refreshing the access token —
-// so a session that's still valid never interrupts the operator mid-task.
 func (c *Client) do(method, path string, body []byte, authorized bool, out interface{}) error {
 	response, err := c.request(method, path, body, authorized)
 	if err != nil {

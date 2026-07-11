@@ -8,9 +8,6 @@ import (
 	"github.com/chrisostomemataba/faltasi-cli/internal/i18n"
 )
 
-// Login prompts for phone + password, authenticates against the backend,
-// and rejects any account that isn't a Balce sales partner or the system
-// admin — even though Django itself would authenticate them fine.
 func Login(client *api.Client) (*api.User, error) {
 	fmt.Println(TitleStyle.Render(i18n.T("login_title")))
 

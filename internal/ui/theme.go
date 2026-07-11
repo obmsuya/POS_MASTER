@@ -2,7 +2,6 @@ package ui
 
 import "github.com/charmbracelet/lipgloss"
 
-// Brand colors — matches the FALTASI/BALCE green used across the desktop app.
 var (
 	ColorPrimary = lipgloss.Color("#7bc83a")
 	ColorMuted   = lipgloss.Color("241")

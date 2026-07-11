@@ -6,9 +6,6 @@ import (
 	"github.com/chrisostomemataba/faltasi-cli/internal/i18n"
 )
 
-// PickLanguage is the one screen allowed to show both languages at once —
-// nobody has picked a preference yet. Every screen after this uses only
-// the chosen language.
 func PickLanguage() (i18n.Lang, error) {
 	var choice string
 	err := huh.NewSelect[string]().

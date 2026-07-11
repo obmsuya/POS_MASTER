@@ -19,8 +19,6 @@ const (
 	MenuExit     MenuChoice = "exit"
 )
 
-// MainMenu shows the role-aware main menu — "Manage Packages" only
-// appears for the system admin.
 func MainMenu(user *api.User) (MenuChoice, error) {
 	fmt.Println(SuccessStyle.Render(i18n.T("welcome", user.FullName)))
 

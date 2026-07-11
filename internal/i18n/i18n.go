@@ -1,7 +1,3 @@
-// Package i18n provides the bilingual (Swahili/English) string table for
-// the Faltasi CLI. The user picks a language once at startup; every screen
-// after that pulls from this table in only that language — no slash-joined
-// "Swahili/English" strings anywhere in the UI.
 package i18n
 
 import "fmt"
@@ -15,7 +11,6 @@ const (
 
 var current Lang = Swahili
 
-// Set fixes the active language for the rest of the process.
 func Set(lang Lang) {
 	current = lang
 }
@@ -84,7 +79,6 @@ var strings = map[string]map[Lang]string{
 	"no_packages":         {Swahili: "Hakuna vifurushi vilivyopo. Muulize msimamizi aunde kimoja.", English: "No packages exist yet. Ask an admin to create one."},
 }
 
-// T returns the string for key in the active language, formatted with args.
 func T(key string, args ...interface{}) string {
 	entry, ok := strings[key]
 	if !ok {

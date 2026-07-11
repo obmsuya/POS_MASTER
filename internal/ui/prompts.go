@@ -9,10 +9,6 @@ import (
 	"github.com/chrisostomemataba/faltasi-cli/internal/validate"
 )
 
-// Shared validators — used both by the Ask* one-shot prompts below and by
-// screens that pre-fill a huh.Input with an existing value (e.g. editing
-// a package) and need the exact same rule applied.
-
 func validateNonEmpty(s string) error {
 	if err := validate.NonEmpty(s); err != nil {
 		return errors.New(i18n.T("required_field"))
@@ -53,7 +49,6 @@ func parsePositiveInt(s string) (int, error)   { return validate.PositiveInt(s) 
 func parsePhone(s string) (string, error)      { return validate.NormalizeTZPhone(s) }
 func parseHardwareID(s string) (string, error) { return validate.HardwareID(s) }
 
-// AskText prompts for a single free-text value with an optional required-field check.
 func AskText(title string, required bool) (string, error) {
 	var value string
 	input := huh.NewInput().Title(title).Value(&value)
@@ -66,7 +61,6 @@ func AskText(title string, required bool) (string, error) {
 	return value, nil
 }
 
-// AskPassword prompts for a password, masking input.
 func AskPassword(title string) (string, error) {
 	var value string
 	err := huh.NewInput().
@@ -81,8 +75,6 @@ func AskPassword(title string) (string, error) {
 	return value, nil
 }
 
-// AskPhone prompts for a phone number, validating and normalizing it to
-// E.164 before returning.
 func AskPhone(title string) (string, error) {
 	var raw string
 	err := huh.NewInput().Title(title).Value(&raw).Validate(validatePhoneText).Run()
@@ -93,7 +85,6 @@ func AskPhone(title string) (string, error) {
 	return normalized, nil
 }
 
-// AskHardwareID prompts for a hardware ID with a basic sanity check.
 func AskHardwareID(title string) (string, error) {
 	var raw string
 	err := huh.NewInput().Title(title).Value(&raw).Validate(validateHardwareIDText).Run()
@@ -104,7 +95,6 @@ func AskHardwareID(title string) (string, error) {
 	return clean, nil
 }
 
-// AskAmount prompts for a positive payment amount.
 func AskAmount(title string) (float64, error) {
 	var raw string
 	err := huh.NewInput().Title(title).Value(&raw).Validate(validateAmountText).Run()
@@ -115,7 +105,6 @@ func AskAmount(title string) (float64, error) {
 	return amount, nil
 }
 
-// AskPositiveInt prompts for a whole number greater than zero.
 func AskPositiveInt(title string) (int, error) {
 	var raw string
 	err := huh.NewInput().Title(title).Value(&raw).Validate(validatePositiveIntText).Run()
@@ -126,7 +115,6 @@ func AskPositiveInt(title string) (int, error) {
 	return value, nil
 }
 
-// Confirm asks a yes/no question.
 func Confirm(title string) (bool, error) {
 	var value bool
 	err := huh.NewConfirm().Title(title).Value(&value).Run()

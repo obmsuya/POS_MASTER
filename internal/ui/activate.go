@@ -10,10 +10,6 @@ import (
 	"github.com/chrisostomemataba/faltasi-cli/internal/i18n"
 )
 
-// ActivateFlow is the primary sales flow: find or register the customer by
-// hardware ID, pick a package, record how they paid, confirm, and submit.
-// The moment the server confirms, the refreshed license state is shown
-// immediately — no separate "check again" step needed.
 func ActivateFlow(client *api.Client) error {
 	hardwareID, err := AskHardwareID(i18n.T("lookup_prompt"))
 	if err != nil {

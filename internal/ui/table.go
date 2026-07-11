@@ -5,8 +5,6 @@ import (
 	"github.com/charmbracelet/lipgloss/table"
 )
 
-// RenderTable prints a bordered, brand-colored table with the given
-// headers and rows.
 func RenderTable(headers []string, rows [][]string) string {
 	t := table.New().
 		Border(lipgloss.RoundedBorder()).

@@ -7,9 +7,6 @@ import (
 	"github.com/chrisostomemataba/faltasi-cli/internal/i18n"
 )
 
-// HistoryFlow shows the most recent manually-recorded payments — across
-// everyone, since it's reached from the main menu without a hardware ID
-// in hand.
 func HistoryFlow(client *api.Client) error {
 	var payments []api.PaymentRecord
 	err := WithSpinner(i18n.T("loading"), func() error {

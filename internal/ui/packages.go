@@ -9,9 +9,6 @@ import (
 	"github.com/chrisostomemataba/faltasi-cli/internal/i18n"
 )
 
-// PackagesFlow is the system-admin-only package management screen: list,
-// create, or edit. Editing always shows the reassurance note that
-// existing customers' already-issued licenses are untouched.
 func PackagesFlow(client *api.Client) error {
 	var packages []api.Package
 	err := WithSpinner(i18n.T("loading"), func() error {
@@ -119,8 +116,6 @@ func editPackage(client *api.Client, packages []api.Package) error {
 
 	fmt.Println(SubtleStyle.Render(i18n.T("pkg_edit_notice")))
 
-	// Pre-fill every field with the package's current values so the admin
-	// can just press Enter to keep whatever they don't want to change.
 	name := selected.Name
 	priceText := selected.Price
 	daysText := fmt.Sprintf("%d", selected.DaysGranted)

@@ -1,6 +1,3 @@
-// Command faltasi is the FALTASI POS sales control centre — a CLI for the
-// sales team to activate/renew customer licenses and for the system admin
-// to manage packages, talking to the wapangaji Django backend.
 package main
 
 import (
@@ -66,8 +63,6 @@ func sayGoodbye() {
 	fmt.Println(ui.SuccessStyle.Render(i18n.T("goodbye")))
 }
 
-// authenticate restores a cached session when one is valid, otherwise
-// prompts for a fresh login and caches the result.
 func authenticate(client *api.Client) (*api.User, error) {
 	if cached, err := session.Load(); err == nil && cached != nil {
 		client.RestoreSession(cached.AccessToken, cached.RefreshToken)

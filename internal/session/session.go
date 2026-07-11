@@ -1,6 +1,3 @@
-// Package session caches a logged-in operator's JWT pair locally so
-// relaunching the CLI mid-shift doesn't require typing a password every
-// time. Nothing about the password itself is ever stored.
 package session
 
 import (
@@ -19,10 +16,6 @@ type Cached struct {
 	SavedAt      time.Time `json:"saved_at"`
 }
 
-// maxAge bounds how long a cached session is trusted before requiring a
-// fresh login, independent of whether the refresh token itself is still
-// technically valid server-side — keeps a lost/shared laptop from staying
-// logged in indefinitely.
 const maxAge = 12 * time.Hour
 
 func path() (string, error) {
@@ -37,7 +30,6 @@ func path() (string, error) {
 	return filepath.Join(dir, "session.json"), nil
 }
 
-// Load returns the cached session if one exists and hasn't expired.
 func Load() (*Cached, error) {
 	filePath, err := path()
 	if err != nil {
@@ -45,11 +37,11 @@ func Load() (*Cached, error) {
 	}
 	raw, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, nil // no session file yet — not an error
+		return nil, nil
 	}
 	var cached Cached
 	if err := json.Unmarshal(raw, &cached); err != nil {
-		return nil, nil // corrupt file — treat as no session
+		return nil, nil
 	}
 	if time.Since(cached.SavedAt) > maxAge {
 		return nil, nil
@@ -57,7 +49,6 @@ func Load() (*Cached, error) {
 	return &cached, nil
 }
 
-// Save persists a fresh session to disk with the current timestamp.
 func Save(cached Cached) error {
 	filePath, err := path()
 	if err != nil {
@@ -71,7 +62,6 @@ func Save(cached Cached) error {
 	return os.WriteFile(filePath, raw, 0600)
 }
 
-// Clear removes any cached session (used on logout or a rejected token).
 func Clear() error {
 	filePath, err := path()
 	if err != nil {

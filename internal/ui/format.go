@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-// FormatDate renders an ISO-8601 timestamp as "24 Aug 2026", falling back
-// to the raw string if it can't be parsed.
 func FormatDate(iso string) string {
 	if iso == "" {
 		return "-"
@@ -20,8 +18,6 @@ func FormatDate(iso string) string {
 	return parsed.Format("2 Jan 2006")
 }
 
-// FormatMoney adds thousand separators to a plain decimal string like
-// "5000.00" -> "5,000". Falls back to the raw string if it isn't numeric.
 func FormatMoney(raw string) string {
 	whole := strings.SplitN(raw, ".", 2)[0]
 	negative := strings.HasPrefix(whole, "-")
@@ -46,7 +42,6 @@ func FormatMoney(raw string) string {
 	return result
 }
 
-// FormatMoneyFloat formats a float64 amount the same way.
 func FormatMoneyFloat(amount float64) string {
 	return FormatMoney(fmt.Sprintf("%.0f", amount))
 }
