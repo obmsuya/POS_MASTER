@@ -1,4 +1,4 @@
-module github.com/chrisostomemataba/faltasi-cli
+module github.com/obmsuya/POS_MASTER
 
 go 1.26.4
 

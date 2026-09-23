@@ -5,8 +5,8 @@ import (
 
 	"github.com/charmbracelet/huh"
 
-	"github.com/chrisostomemataba/faltasi-cli/internal/i18n"
-	"github.com/chrisostomemataba/faltasi-cli/internal/validate"
+	"github.com/obmsuya/POS_MASTER/internal/i18n"
+	"github.com/obmsuya/POS_MASTER/internal/validate"
 )
 
 func validateNonEmpty(s string) error {

@@ -6,8 +6,8 @@ import (
 
 	"github.com/charmbracelet/huh"
 
-	"github.com/chrisostomemataba/faltasi-cli/internal/api"
-	"github.com/chrisostomemataba/faltasi-cli/internal/i18n"
+	"github.com/obmsuya/POS_MASTER/internal/api"
+	"github.com/obmsuya/POS_MASTER/internal/i18n"
 )
 
 func ActivateFlow(client *api.Client) error {
