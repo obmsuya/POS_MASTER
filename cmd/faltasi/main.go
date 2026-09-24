@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/charmbracelet/huh"
 
@@ -10,7 +11,10 @@ import (
 	"github.com/obmsuya/POS_MASTER/internal/i18n"
 	"github.com/obmsuya/POS_MASTER/internal/session"
 	"github.com/obmsuya/POS_MASTER/internal/ui"
+	"github.com/obmsuya/POS_MASTER/internal/updater"
 )
+
+var version = "dev"
 
 func main() {
 	ui.PrintBanner()
@@ -31,6 +35,8 @@ func main() {
 		sayGoodbye()
 		return
 	}
+
+	checkForUpdate()
 
 mainLoop:
 	for {
@@ -63,6 +69,44 @@ mainLoop:
 
 func sayGoodbye() {
 	fmt.Println(ui.SuccessStyle.Render(i18n.T("goodbye")))
+}
+
+func checkForUpdate() {
+	if version == "dev" {
+		return
+	}
+
+	var release *updater.Release
+	_ = ui.WithSpinner(i18n.T("loading"), func() error {
+		var err error
+		release, err = updater.LatestRelease()
+		return err
+	})
+
+	if release == nil || release.TagName == version {
+		return
+	}
+
+	ok, err := ui.Confirm(i18n.T("update_available", release.TagName))
+	if err != nil || !ok {
+		return
+	}
+
+	url := updater.AssetURL(release)
+	if url == "" {
+		return
+	}
+
+	applyErr := ui.WithSpinner(i18n.T("updating"), func() error {
+		return updater.Apply(url)
+	})
+	if applyErr != nil {
+		fmt.Println(ui.ErrorStyle.Render(i18n.T("update_failed", applyErr.Error())))
+		return
+	}
+
+	fmt.Println(ui.SuccessStyle.Render(i18n.T("update_done")))
+	os.Exit(0)
 }
 
 func authenticate(client *api.Client) (*api.User, error) {
