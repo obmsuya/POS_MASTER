@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/charmbracelet/huh"
 
@@ -26,8 +25,11 @@ func main() {
 	client := api.New()
 	user, err := authenticate(client)
 	if err != nil {
-		fmt.Println(ui.ErrorStyle.Render(err.Error()))
-		os.Exit(1)
+		if !errors.Is(err, huh.ErrUserAborted) {
+			fmt.Println(ui.ErrorStyle.Render(err.Error()))
+		}
+		sayGoodbye()
+		return
 	}
 
 mainLoop:
@@ -77,18 +79,24 @@ func authenticate(client *api.Client) (*api.User, error) {
 		_ = session.Clear()
 	}
 
-	user, err := ui.Login(client)
-	if err != nil {
-		return nil, err
+	for {
+		user, err := ui.Login(client)
+		if err != nil {
+			if errors.Is(err, huh.ErrUserAborted) {
+				return nil, huh.ErrUserAborted
+			}
+			fmt.Println(ui.ErrorStyle.Render(err.Error()))
+			continue
+		}
+
+		_ = session.Save(session.Cached{
+			AccessToken:  client.AccessToken,
+			RefreshToken: client.RefreshToken,
+			FullName:     user.FullName,
+			IsSuperuser:  user.IsSuperuser,
+			UserType:     user.UserType,
+		})
+
+		return user, nil
 	}
-
-	_ = session.Save(session.Cached{
-		AccessToken:  client.AccessToken,
-		RefreshToken: client.RefreshToken,
-		FullName:     user.FullName,
-		IsSuperuser:  user.IsSuperuser,
-		UserType:     user.UserType,
-	})
-
-	return user, nil
 }

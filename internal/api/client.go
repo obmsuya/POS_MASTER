@@ -255,7 +255,7 @@ func (c *Client) do(method, path string, body []byte, authorized bool, out inter
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer func() { response.Body.Close() }()
 
 	if response.StatusCode == http.StatusUnauthorized && authorized && c.RefreshToken != "" {
 		if refreshErr := c.RefreshAccessToken(); refreshErr == nil {
@@ -264,7 +264,6 @@ func (c *Client) do(method, path string, body []byte, authorized bool, out inter
 			if err != nil {
 				return err
 			}
-			defer response.Body.Close()
 		}
 	}
 
