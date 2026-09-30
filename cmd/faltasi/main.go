@@ -114,11 +114,13 @@ func authenticate(client *api.Client) (*api.User, error) {
 		client.RestoreSession(cached.AccessToken, cached.RefreshToken)
 		if refreshErr := client.RefreshAccessToken(); refreshErr == nil {
 			fmt.Println(ui.SuccessStyle.Render(i18n.T("session_restored", cached.FullName)))
-			return &api.User{
+			user := &api.User{
 				FullName:    cached.FullName,
 				IsSuperuser: cached.IsSuperuser,
 				UserType:    cached.UserType,
-			}, nil
+			}
+			rememberSession(client, user)
+			return user, nil
 		}
 		_ = session.Clear()
 	}
@@ -133,14 +135,21 @@ func authenticate(client *api.Client) (*api.User, error) {
 			continue
 		}
 
+		rememberSession(client, user)
+		return user, nil
+	}
+}
+
+func rememberSession(client *api.Client, user *api.User) {
+	save := func(access, refresh string) {
 		_ = session.Save(session.Cached{
-			AccessToken:  client.AccessToken,
-			RefreshToken: client.RefreshToken,
+			AccessToken:  access,
+			RefreshToken: refresh,
 			FullName:     user.FullName,
 			IsSuperuser:  user.IsSuperuser,
 			UserType:     user.UserType,
 		})
-
-		return user, nil
 	}
+	save(client.AccessToken, client.RefreshToken)
+	client.OnTokensRefreshed = save
 }
