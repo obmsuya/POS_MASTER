@@ -25,7 +25,7 @@ var strings = map[string]map[Lang]string{
 	"login_title":         {Swahili: "Ingia FALTASI POS", English: "Sign in to FALTASI POS"},
 	"login_failed":        {Swahili: "Imeshindwa kuingia: %s", English: "Sign in failed: %s"},
 	"invalid_phone":       {Swahili: "Namba ya simu si sahihi. Tumia mfano 07XXXXXXXX.", English: "That phone number isn't valid. Use a format like 07XXXXXXXX."},
-	"invalid_hwid":        {Swahili: "Umekosea kidogo — hii ID ya POS (Hardware ID) si sahihi.", English: "That doesn't look right — check the Hardware ID."},
+	"invalid_hwid":        {Swahili: "Bandika Device ID kamili uliyonakili kwenye menyu ya akaunti ya POS: herufi 64, au cloud-… kwa biashara ya mtandaoni.", English: "Paste the full Device ID copied from the POS account menu: 64 characters, or cloud-… for a web business."},
 	"invalid_amount":      {Swahili: "Kiasi kilicholipwa si sahihi. Lazima kiwe zaidi ya sifuri.", English: "That amount isn't valid. It must be greater than zero."},
 	"invalid_package":     {Swahili: "Chagua kifurushi kwenye orodha.", English: "Pick a package from the list."},
 	"role_not_allowed":    {Swahili: "Akaunti hii haiwezi kutumia FALTASI POS.", English: "This account can't use FALTASI POS."},

@@ -9,6 +9,10 @@ import (
 
 var digitsOnly = regexp.MustCompile(`[^0-9]`)
 
+var desktopHardwareID = regexp.MustCompile(`^[0-9a-f]{64}$`)
+
+var cloudHardwareID = regexp.MustCompile(`^cloud-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+
 func NormalizeTZPhone(raw string) (string, error) {
 	digits := digitsOnly.ReplaceAllString(raw, "")
 
@@ -25,14 +29,11 @@ func NormalizeTZPhone(raw string) (string, error) {
 }
 
 func HardwareID(raw string) (string, error) {
-	trimmed := strings.TrimSpace(raw)
-	if len(trimmed) < 8 {
-		return "", errors.New("hardware id too short")
+	normalized := strings.ToLower(strings.TrimSpace(raw))
+	if desktopHardwareID.MatchString(normalized) || cloudHardwareID.MatchString(normalized) {
+		return normalized, nil
 	}
-	if strings.ContainsAny(trimmed, " \t\n\r") {
-		return "", errors.New("hardware id contains whitespace")
-	}
-	return trimmed, nil
+	return "", errors.New("hardware id must be 64 hex characters or cloud- followed by a uuid")
 }
 
 func Amount(raw string) (float64, error) {
