@@ -25,9 +25,10 @@ func resolveBaseURL() string {
 }
 
 type Client struct {
-	http         *http.Client
-	AccessToken  string
-	RefreshToken string
+	http              *http.Client
+	AccessToken       string
+	RefreshToken      string
+	OnTokensRefreshed func(access, refresh string)
 }
 
 func New() *Client {
@@ -84,12 +85,19 @@ func (c *Client) RefreshAccessToken() error {
 		return err
 	}
 	var parsed struct {
-		Access string `json:"access"`
+		Access  string `json:"access"`
+		Refresh string `json:"refresh"`
 	}
 	if err := c.do(http.MethodPost, "/auth/token/refresh/", body, false, &parsed); err != nil {
 		return err
 	}
 	c.AccessToken = parsed.Access
+	if parsed.Refresh != "" {
+		c.RefreshToken = parsed.Refresh
+	}
+	if c.OnTokensRefreshed != nil {
+		c.OnTokensRefreshed(c.AccessToken, c.RefreshToken)
+	}
 	return nil
 }
 
@@ -255,17 +263,15 @@ func (c *Client) do(method, path string, body []byte, authorized bool, out inter
 	if err != nil {
 		return err
 	}
-	defer func() { response.Body.Close() }()
 
-	if response.StatusCode == http.StatusUnauthorized && authorized && c.RefreshToken != "" {
-		if refreshErr := c.RefreshAccessToken(); refreshErr == nil {
-			response.Body.Close()
-			response, err = c.request(method, path, body, authorized)
-			if err != nil {
-				return err
-			}
+	if response.StatusCode == http.StatusUnauthorized && authorized && c.RefreshToken != "" && c.RefreshAccessToken() == nil {
+		response.Body.Close()
+		response, err = c.request(method, path, body, authorized)
+		if err != nil {
+			return err
 		}
 	}
+	defer response.Body.Close()
 
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
